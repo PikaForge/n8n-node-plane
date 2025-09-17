@@ -6,12 +6,14 @@ import { IssueProperties } from "./properties/issue";
 import { LabelProperties } from "./properties/label";
 import { LinkProperties } from "./properties/link";
 import { ModuleProperties } from "./properties/module";
+import { ModuleIssueProperties } from "./properties/module-issue";
 import { ProjectProperties } from "./properties/project";
 import { StateProperties } from "./properties/state";
 import { AllOperations, AnyOperation, DefaultOperations } from "./types/operation";
 import { PlaneResource, Resource } from "./types/resource";
 import { ParameterUtils } from "./utils/parameters";
-import { ModuleIssueProperties } from "./properties/module-issue";
+import { CycleProperties } from "./properties/cycle";
+import { CycleIssueProperties } from "./properties/cycle-issue";
 
 export class Plane implements INodeType {
     description: INodeTypeDescription = {
@@ -141,8 +143,8 @@ export class Plane implements INodeType {
             // ...IssueAttachmentsProperties,
             ...ModuleProperties,
             ...ModuleIssueProperties,
-            // ...CycleProperties,
-            // ...CycleIssueProperties,
+            ...CycleProperties,
+            ...CycleIssueProperties,
             // ...IntakeIssueProperties,
             // ...WorklogsProperties,
             // ...MembersProperties,
@@ -250,6 +252,7 @@ export class Plane implements INodeType {
 
                 const [method, route] = constructRoute(resource, operation, parameters);
                 const body = this.getNodeParameter('data', 0, null) as IDataObject;
+                this.logger.debug(JSON.stringify(body));
                 let responseData = await planeApiRequest.call(this, method, route, body);
 
                 returnData.push(

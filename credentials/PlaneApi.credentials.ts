@@ -1,4 +1,4 @@
-import { IAuthenticateGeneric, ICredentialTestRequest, ICredentialType, INodeProperties } from "n8n-workflow";
+import { IAuthenticateGeneric, ICredentialType, INodeProperties } from "n8n-workflow";
 import { PLANE_HOSTED_BASE_URL } from "../nodes/Plane/config";
 
 export class PlaneApi implements ICredentialType {
@@ -32,13 +32,6 @@ export class PlaneApi implements ICredentialType {
             headers: {
                 'x-api-key': '={{$credentials.apiKey}}',
             },
-        },
-    };
-
-    test: ICredentialTestRequest = {
-        request: {
-            baseURL: '={{$credentials?.baseUrl}}',
-            url: '/api/v1/projects',
         },
     };
 }

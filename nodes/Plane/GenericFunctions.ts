@@ -17,14 +17,14 @@ export async function planeApiRequest(
     const defaultOptions: IRequestOptions = {
         headers: {},
         method,
-        body: method === 'GET' || method === 'HEAD' || method === 'DELETE' ? null : body,
+        body,
         qs: query,
         url: uri || `${credentials.baseUrl}/api/v1${endpoint}`,
         json: true,
     }
 
     const optionsWithDefaults = Object.assign({}, defaultOptions, options);
-    if (optionsWithDefaults.body === null || optionsWithDefaults.body.length === 0)
+    if (['GET', 'HEAD', "DELETE"].includes(method) || optionsWithDefaults.body === null || optionsWithDefaults.body.length === 0)
         delete optionsWithDefaults.body;
 
     return this.helpers.requestWithAuthentication.call(this, 'planeApi', optionsWithDefaults);

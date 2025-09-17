@@ -55,9 +55,43 @@ export const ModuleProperties = [
         default: '',
     }),
     OperationNodeProperties.create(Resource.MODULE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
-        displayName: 'Data',
-        name: 'data',
-        type: 'json',
-        default: '',
+        displayName: 'Payload',
+        name: 'payload',
+        type: 'fixedCollection',
+        typeOptions: {
+            multipleValues: true,
+        },
+        placeholder: 'Add Parameter',
+        default: {
+            parameters: [
+                {
+                    name: '',
+                    value: '',
+                },
+            ],
+        },
+        options: [
+            {
+                name: 'parameters',
+                displayName: 'Parameter',
+                values: [
+                    {
+                        displayName: 'Name',
+                        name: 'name',
+                        type: 'string',
+                        default: '',
+                        description:
+                            'ID of the field to set. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+                    },
+                    {
+                        displayName: 'Value',
+                        name: 'value',
+                        type: 'string',
+                        default: '',
+                        description: 'Value of the field to set',
+                    },
+                ],
+            },
+        ],
     }),
 ]
