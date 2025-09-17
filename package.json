@@ -1,6 +1,6 @@
 {
   "name": "@pikaforge/n8n-nodes-plane",
-  "version": "0.1.0",
+  "version": "0.0.1-alpha.1",
   "description": "Node to Integrate with the Plane API",
   "keywords": [
     "n8n-community-node-package"
@@ -9,11 +9,11 @@
   "homepage": "",
   "author": {
     "name": "Scott Petersen",
-    "email": "scott@nvll.dev"
+    "email": "nvlldev@pikaforge.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pikaforge/n8n-nodes-plane.git"
+    "url": "git+https://github.com/pikaforge/n8n-nodes-plane.git"
   },
   "engines": {
     "node": ">=20.15"
