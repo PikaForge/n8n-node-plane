@@ -206,7 +206,6 @@ export class Plane implements INodeType {
         const operation = this.getNodeParameter('operation', 0) as AnyOperation;
 
         for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
-            try {
                 const item = items[itemIndex];
                 if (!item) continue;
 
@@ -273,13 +272,6 @@ const parametersToKeyValue = async (
                         }
                     )
                 )
-            } catch (error) {
-                if (this.continueOnFail()) {
-                    returnData.push({ json: { error: error.message } });
-                    continue;
-                }
-                throw error;
-            }
         }
 
         return [returnData];

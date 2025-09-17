@@ -1,4 +1,4 @@
-import { ApplicationError, IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, ILoadOptionsFunctions, IRequestOptions } from "n8n-workflow";
+import { IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, ILoadOptionsFunctions, IRequestOptions, JsonObject, NodeApiError } from "n8n-workflow";
 
 export type BodyParameter = {
     name: string;
@@ -21,25 +21,63 @@ export async function planeApiRequest(
         throw new Error('No credentials got returned!');
     }
 
+    const baseUrl = credentials.baseUrl as string;
+    const cleanBaseUrl = baseUrl.endsWith('/api/v1') ? baseUrl : `${baseUrl}/api/v1`;
+
     const defaultOptions: IRequestOptions = {
-        headers: {
-            "Content-Type": "application/json",
-        },
         method,
         body,
         qs: query,
-        url: uri || `${credentials.baseUrl}/api/v1${endpoint}`,
+        uri: uri || `${cleanBaseUrl}${endpoint}`,
         json: true,
+        gzip: true,
+        followRedirect: true,
+        followAllRedirects: true, 
+        timeout: 300000, // 5 minutes timeout like HttpRequest V3
+        headers: {
+            'X-API-Key': credentials.apiKey as string,
+            'Accept': 'application/json',
+        },
     }
 
     const optionsWithDefaults = Object.assign({}, defaultOptions, options);
-    if (['GET', 'HEAD', "DELETE"].includes(method) || optionsWithDefaults.body === null || optionsWithDefaults.body.length === 0)
+
+    // Handle body for different HTTP methods like HttpRequest V3
+    if (['GET', 'HEAD', "DELETE"].includes(method)) {
         delete optionsWithDefaults.body;
+    } else if (optionsWithDefaults.body && Object.keys(optionsWithDefaults.body).length === 0) {
+        delete optionsWithDefaults.body;
+    }
+
+    // Set Content-Type header only when we have a body and it's JSON
+    if (optionsWithDefaults.body && optionsWithDefaults.json) {
+        optionsWithDefaults.headers = {
+            ...optionsWithDefaults.headers,
+            'Content-Type': 'application/json',
+        };
+    }
 
     try {
         return this.helpers.requestWithAuthentication.call(this, 'planeApi', optionsWithDefaults);
     } catch (error) {
-        throw new ApplicationError(`Plane Error: [${error.errorCode}] ${error.message} ${JSON.stringify(optionsWithDefaults)}`);
+        const statusCode = error.errorCode || error.statusCode || error.response?.statusCode || 'UNKNOWN';
+        const requestUri = optionsWithDefaults.uri || optionsWithDefaults.url;
+        const errorMessage = `Plane API Error: ${method} ${requestUri} - [${statusCode}] ${error.message}`;
+
+        // Add detailed error information for debugging
+        const debugInfo: JsonObject = {
+            method,
+            uri: requestUri ?? '',
+            statusCode,
+            headers: optionsWithDefaults.headers as JsonObject,
+            body: optionsWithDefaults.body,
+            requestOptions: optionsWithDefaults as JsonObject,
+            errorMessage: error.message,
+            responseBody: error.response?.body,
+            responseHeaders: error.response?.headers
+        };
+
+        throw new NodeApiError(this.getNode(), debugInfo, { message: errorMessage });
     }
 }
 

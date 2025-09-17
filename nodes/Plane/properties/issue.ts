@@ -1,6 +1,6 @@
 import { OperationNodeProperties } from "../common/operation-node-properties";
 import { ResourceOperationNodeProperties } from "../common/resource-operation-node-properties";
-import { DefaultOperations } from "../types/operation";
+import { DefaultOperations, IssueOperations } from "../types/operation";
 import { Resource } from "../types/resource";
 
 export const IssueProperties = [
@@ -10,37 +10,37 @@ export const IssueProperties = [
             options: [
                 {
                     name: 'Create Issue',
-                    value: 'create',
+                    value: DefaultOperations.CREATE,
                     description: 'Create a new issue',
                     action: 'Create an issue',
                 },
                 {
                     name: 'List Issues',
-                    value: 'list',
+                    value: DefaultOperations.LIST,
                     description: 'Get a list of issues',
                     action: 'List issues',
                 },
                 {
                     name: 'Get Issue by UUID',
-                    value: 'getByUUID',
+                    value: IssueOperations.GET_BY_UUID,
                     description: 'Get an issue by UUID',
                     action: 'Get an issue by UUID',
                 },
                 {
                     name: 'Get Issue by Sequence ID',
-                    value: 'getBySequenceID',
+                    value: IssueOperations.GET_BY_SEQUENCE_ID,
                     description: 'Get an issue by Sequence ID',
                     action: 'Get an issue by Sequence ID',
                 },
                 {
                     name: 'Update Issue',
-                    value: 'update',
+                    value: DefaultOperations.UPDATE,
                     description: 'Update an issue',
                     action: 'Update an issue',
                 },
                 {
                     name: 'Delete Issue',
-                    value: 'delete',
+                    value: DefaultOperations.DELETE,
                     description: 'Delete an issue',
                     action: 'Delete an issue',
                 }

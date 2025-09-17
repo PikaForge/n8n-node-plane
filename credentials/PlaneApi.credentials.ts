@@ -30,7 +30,7 @@ export class PlaneApi implements ICredentialType {
         type: 'generic',
         properties: {
             headers: {
-                'x-api-key': '={{$credentials.apiKey}}',
+                'X-API-Key': '={{$credentials.apiKey}}',
             },
         },
     };

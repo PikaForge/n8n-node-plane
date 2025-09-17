@@ -136,9 +136,9 @@ export const API_ROUTES: APIRoutes = {
 
 export function constructRoute<T extends Resource, R extends AnyOperation>(resource: T, operation: R, parameters: Record<string, string>): [Method, string] {
     const resourceRoutes = API_ROUTES[resource];
-    if (!resourceRoutes) 
+    if (!resourceRoutes)
         throw new Error(`No routes found for resource: ${resource}`);
-    
+
     const route = resourceRoutes[operation];
     if (!route) {
         throw new Error(`No route found for resource: ${resource} and operation: ${String(operation)}`);
@@ -159,8 +159,8 @@ export function constructRoute<T extends Resource, R extends AnyOperation>(resou
     });
 
     if (missingParams.length > 0) {
-        throw new Error(`Missing required parameter(s) for route: ${missingParams.join(', ')}`);
+        const errorMsg = `Missing required parameter(s) for route ${resource}:${String(operation)}: ${missingParams.join(', ')}. Available parameters: ${Object.keys(parameters).join(', ')}`;
+        throw new Error(errorMsg);
     }
-
     return [method, url];
 }
