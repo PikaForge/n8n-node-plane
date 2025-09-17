@@ -15,6 +15,9 @@
     "type": "git",
     "url": "git+https://github.com/pikaforge/n8n-nodes-plane.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=20.15"
   },
