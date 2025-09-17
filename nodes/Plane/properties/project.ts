@@ -42,18 +42,15 @@ export const ProjectProperties = [
             default: DefaultOperations.CREATE,
         }
     ),
-    OperationNodeProperties.create(Resource.PROJECT, Object.values(DefaultOperations), {
-        displayName: 'Workspace Slug',
-        name: 'workspaceSlug',
-        type: 'string',
-        required: true,
-        default: '',
-    }),
     OperationNodeProperties.create(Resource.PROJECT, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
         displayName: 'Project ID',
         name: 'projectId',
-        type: 'string',
         required: true,
+        type: 'options',
+        typeOptions: {
+            loadOptionsDependsOn: ['workspaceSlug'],
+            loadOptionsMethod: 'getProjects',
+        },
         default: '',
     }),
     OperationNodeProperties.create(Resource.PROJECT, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
@@ -62,5 +59,6 @@ export const ProjectProperties = [
         type: 'collection',
         placeholder: 'Add Field',
         default: {},
+        options: [],
     }),
 ]

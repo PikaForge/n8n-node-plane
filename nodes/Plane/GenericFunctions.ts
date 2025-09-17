@@ -1,26 +1,31 @@
-import { IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, IHttpRequestOptions, ILoadOptionsFunctions } from "n8n-workflow";
+import { IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, IHttpRequestOptions, ILoadOptionsFunctions, IRequestOptions } from "n8n-workflow";
 
 export async function planeApiRequest(
     this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
     method: IHttpRequestMethods,
-    endpoint: `/${string}`,
-    body: object,
-    query?: IDataObject,
+    endpoint: string,
+    body: IDataObject = {},
+    query: IDataObject = {},
     uri?: string,
+    options: IRequestOptions = {}
 ) {
-    const authenticationMethod = this.getNodeParameter('authentication', 0) as string;
+    const credentials = await this.getCredentials('planeApi');
+    if (!credentials) {
+        throw new Error('No credentials got returned!');
+    }
 
-    const options: IHttpRequestOptions = {
+    const defaultOptions: IRequestOptions = {
         headers: {},
         method,
-        body: method === 'GET' || method === 'HEAD' || method === 'DELETE' ? null : { data: body },
+        body: method === 'GET' || method === 'HEAD' || method === 'DELETE' ? null : body,
         qs: query,
-        url: uri || `https://api.plane.com/v1${endpoint}`,
+        url: uri || `${credentials.baseUrl}/api/v1${endpoint}`,
         json: true,
     }
 
-    if (options.body === null) delete options.body;
+    const optionsWithDefaults = Object.assign({}, defaultOptions, options);
+    if (optionsWithDefaults.body === null || optionsWithDefaults.body.length === 0)
+        delete optionsWithDefaults.body;
 
-    const credentialType = authenticationMethod === 'accessToken' ? 'planeApi' : 'planeOAuth2Api';
-    return this.helpers.requestWithAuthentication.call(this, credentialType, options);
+    return this.helpers.requestWithAuthentication.call(this, 'planeApi', optionsWithDefaults);
 }

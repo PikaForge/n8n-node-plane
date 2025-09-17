@@ -1,10 +1,11 @@
 import { INodeProperties } from "n8n-workflow";
 import { Resource } from "../types/resource";
 
-export const ResourceOperationDefaults: Pick<INodeProperties, 'displayName' | 'name' | 'type'> = {
+export const ResourceOperationDefaults: Pick<INodeProperties, 'displayName' | 'name' | 'type' | 'noDataExpression'> = {
     displayName: 'Operation',
     name: 'operation',
     type: 'options',
+    noDataExpression: true,
 }
 
 export class ResourceOperationNodeProperties {

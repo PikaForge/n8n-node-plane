@@ -1,5 +1,5 @@
-import { AnyOperation, DefaultOperations, IssueOperations, MembersOperations } from "../types/operation"
-import { Resource } from "../types/resource"
+import { AnyOperation, DefaultOperations, IssueOperations, MembersOperations } from "../types/operation";
+import { Resource } from "../types/resource";
 
 enum Method {
     GET = 'GET',
@@ -11,10 +11,10 @@ enum Method {
 type API_ROUTES = typeof API_ROUTES;
 
 type RouteDefinition = [Method, string];
-type OperationRoutes<T extends Resource, R extends keyof API_ROUTES[T]> = Record<R, RouteDefinition>;
-type APIRoutes<T extends Resource, R extends keyof API_ROUTES[T]> = Record<T, OperationRoutes<T, R>>;
+type OperationRoutes = Partial<Record<AnyOperation, RouteDefinition>>;
+type APIRoutes = Partial<Record<Resource, OperationRoutes>>;
 
-export const API_ROUTES: APIRoutes<Resource, AnyOperation> = {
+export const API_ROUTES: APIRoutes = {
     [Resource.PROJECT]: {
         [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/projects'],
         [DefaultOperations.LIST]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects'],
@@ -37,16 +37,16 @@ export const API_ROUTES: APIRoutes<Resource, AnyOperation> = {
         [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/labels/{{ labelId }}'],
     },
     [Resource.LINK]: {
-        [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/links'],
-        [DefaultOperations.LIST]: [Method.GET, '/workspaces/{{ workspaceSlug }}/links'],
-        [DefaultOperations.GET]: [Method.GET, '/workspaces/{{ workspaceSlug }}/links/{{ linkId }}'],
-        [DefaultOperations.UPDATE]: [Method.PATCH, '/workspaces/{{ workspaceSlug }}/links/{{ linkId }}'],
-        [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/links/{{ linkId }}'],
+        [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/links'],
+        [DefaultOperations.LIST]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/links'],
+        [DefaultOperations.GET]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/links/{{ linkId }}'],
+        [DefaultOperations.UPDATE]: [Method.PATCH, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/links/{{ linkId }}'],
+        [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/links/{{ linkId }}'],
     },
     [Resource.ISSUE]: {
         [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues'],
         [DefaultOperations.LIST]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues'],
-        [IssueOperations.GET_BY_UUID]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueUuid }}'],
+        [IssueOperations.GET_BY_UUID]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}'],
         [IssueOperations.GET_BY_SEQUENCE_ID]: [Method.GET, '/workspaces/{{ workspaceSlug }}/issues/{{ issueSequenceId }}'],
         [DefaultOperations.UPDATE]: [Method.PATCH, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}'],
         [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}'],
@@ -72,9 +72,9 @@ export const API_ROUTES: APIRoutes<Resource, AnyOperation> = {
     [Resource.ISSUE_PROPERTIES]: {
         [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties'],
         [DefaultOperations.LIST]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties'],
-        [DefaultOperations.GET]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties/{{ propertyKey }}'],
-        [DefaultOperations.UPDATE]: [Method.PATCH, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties/{{ propertyKey }}'],
-        [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties/{{ propertyKey }}'],
+        [DefaultOperations.GET]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties/{{ issuePropertyId }}'],
+        [DefaultOperations.UPDATE]: [Method.PATCH, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties/{{ issuePropertyId }}'],
+        [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-types/{{ issueTypeId }}/issue-properties/{{ issuePropertyId }}'],
     },
     [Resource.ISSUE_PROPERTY_OPTIONS]: {
         [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issue-properties/{{ issuePropertyId }}/options'],
@@ -132,9 +132,9 @@ export const API_ROUTES: APIRoutes<Resource, AnyOperation> = {
         [MembersOperations.LIST_WORKSPACE]: [Method.GET, '/workspaces/{{ workspaceSlug }}/members'],
         [MembersOperations.LIST_PROJECT]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/members'],
     },
-};
+} as const;
 
-export function constructRoute<T extends Resource, R extends keyof API_ROUTES[T]>(resource: T, operation: R, parameters: Record<string, string>): [Method, string] {
+export function constructRoute<T extends Resource, R extends AnyOperation>(resource: T, operation: R, parameters: Record<string, string>): [Method, string] {
     const resourceRoutes = API_ROUTES[resource];
     if (!resourceRoutes) 
         throw new Error(`No routes found for resource: ${resource}`);
@@ -146,11 +146,20 @@ export function constructRoute<T extends Resource, R extends keyof API_ROUTES[T]
 
     const [method, _url] = route as [Method, string];
     let url = _url;
-    
-    // Replace placeholders in the URL with actual parameters (support both {{key}} and {{ key }})
-    for (const [key, value] of Object.entries(parameters)) {
-        const regex = new RegExp(`{{\s*${key}\s*}}`, 'g');
-        url = url.replace(regex, encodeURIComponent(value));
+
+    // Find all placeholders in the URL (e.g., {{ key }})
+    const placeholderRegex = /{{\s*([\w]+)\s*}}/g;
+    const missingParams: string[] = [];
+    url = url.replace(placeholderRegex, (match, key) => {
+        if (parameters[key] === undefined) {
+            missingParams.push(key);
+            return match;
+        }
+        return encodeURIComponent(parameters[key]);
+    });
+
+    if (missingParams.length > 0) {
+        throw new Error(`Missing required parameter(s) for route: ${missingParams.join(', ')}`);
     }
 
     return [method, url];

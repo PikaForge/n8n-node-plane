@@ -1,15 +1,25 @@
-import { INodeType, INodeTypeDescription, NodeConnectionType } from "n8n-workflow";
+import { IDataObject, IExecuteFunctions, ILoadOptionsFunctions, INodeExecutionData, INodePropertyOptions, INodeType, INodeTypeDescription, NodeConnectionType } from "n8n-workflow";
+import { constructRoute } from "./api/routes";
+import { OperationNodeProperties } from "./common/operation-node-properties";
+import { planeApiRequest } from "./GenericFunctions";
+import { IssueProperties } from "./properties/issue";
+import { LabelProperties } from "./properties/label";
+import { LinkProperties } from "./properties/link";
+import { ModuleProperties } from "./properties/module";
 import { ProjectProperties } from "./properties/project";
+import { StateProperties } from "./properties/state";
+import { AllOperations, AnyOperation, DefaultOperations } from "./types/operation";
 import { PlaneResource, Resource } from "./types/resource";
+import { ParameterUtils } from "./utils/parameters";
 
 export class Plane implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'Plane',
         name: 'plane',
         group: ['output'],
-        icon: { light: 'file:plane.svg', dark: 'file:plane.svg' },
+        icon: { light: 'file:plane-light.svg', dark: 'file:plane-dark.svg' },
         version: 1,
-        subtitle: '={{$parameter["operation"]}}',
+        subtitle: '={{$parameter["resource"]}} ={{$parameter["operation"]}}',
         description: 'Consume Plane API',
         defaults: {
             name: 'Plane',
@@ -17,24 +27,10 @@ export class Plane implements INodeType {
         usableAsTool: true,
         inputs: [NodeConnectionType.Main],
         outputs: [NodeConnectionType.Main],
-        requestDefaults: {
-            baseURL: 'https://api.plane.so/api/v1',
-        },
         credentials: [
             {
                 name: 'planeApi',
                 required: true,
-                displayOptions: {
-                    show: {
-                        authentication: ['accessToken'],
-                    }
-                },
-                testedBy: {
-                    request: {
-                        method: 'GET',
-                        url: '/projects',
-                    }
-                }
             }
         ],
         properties: [
@@ -70,10 +66,179 @@ export class Plane implements INodeType {
                 default: 'project',
             },
 
+            OperationNodeProperties.create(Object.values(Resource), Object.values(DefaultOperations), {
+                displayName: 'Workspace Slug',
+                name: 'workspaceSlug',
+                type: 'string',
+                required: true,
+                default: '',
+            }),
+
+            OperationNodeProperties.create(
+                Object.values(Resource).filter(r => r !== Resource.PROJECT),
+                Object.values(AllOperations),
+                {
+                    displayName: 'Project ID',
+                    name: 'projectId',
+                    required: true,
+                    type: 'options',
+                    typeOptions: {
+                        loadOptionsDependsOn: ['workspaceSlug'],
+                        loadOptionsMethod: 'getProjects',
+                    },
+                    default: '',
+                }
+            ),
+
+            OperationNodeProperties.create(
+                [
+                    Resource.LINK,
+                    Resource.ISSUE_ACTIVITY,
+                    Resource.ISSUE_COMMENT,
+                    Resource.ISSUE_PROPERTY_VALUES,
+                    Resource.ISSUE_ATTACHMENTS
+                ],
+                Object.values(AllOperations),
+                {
+                    displayName: 'Issue ID',
+                    name: 'issueId',
+                    type: 'string',
+                    required: true,
+                    default: '',
+                }
+            ),
+
             // --------------------------------------------------
             //         Operations
             // --------------------------------------------------
             ...ProjectProperties,
+            ...StateProperties,
+            ...LabelProperties,
+            ...LinkProperties,
+            ...IssueProperties,
+            // ...IssueActivityProperties,
+            // ...IssueCommentProperties,
+            // ...IssueTypeProperties,
+            // ...IssuePropertiesProperties,
+            // ...IssuePropertyOptionsProperties,
+            // ...IssuePropertyValuesProperties,
+            // ...IssueAttachmentsProperties,
+            ...ModuleProperties,
+            // ...ModuleIssueProperties,
+            // ...CycleProperties,
+            // ...CycleIssueProperties,
+            // ...IntakeIssueProperties,
+            // ...WorklogsProperties,
+            // ...MembersProperties,
         ]
+    }
+
+    methods = {
+        loadOptions: {
+            async getProjects(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+                const [method, route] = constructRoute(Resource.PROJECT, DefaultOperations.LIST, {
+                    workspaceSlug: this.getCurrentNodeParameter('workspaceSlug') as string,
+                });
+                const data = await planeApiRequest.call(this, method, route);
+                const results = data.results as IDataObject[];
+
+                return results.map(item => ({
+                    name: item.name as string,
+                    value: item.id as string,
+                }));
+            },
+
+            async getModules(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+                const [method, route] = constructRoute(Resource.MODULE, DefaultOperations.LIST, {
+                    workspaceSlug: this.getCurrentNodeParameter('workspaceSlug') as string,
+                    projectId: this.getCurrentNodeParameter('projectId') as string,
+                });
+                const data = await planeApiRequest.call(this, method, route);
+                const results = data.results as IDataObject[];
+
+                return results.map(item => ({
+                    name: item.name as string,
+                    value: item.id as string,
+                }));
+            }
+        }
+    }
+
+    
+
+    async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+        const items = this.getInputData();
+        const returnData: INodeExecutionData[] = [];
+
+        const resource = this.getNodeParameter('resource', 0) as Resource;
+        const operation = this.getNodeParameter('operation', 0) as AnyOperation;
+
+        for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+            try {
+                const item = items[itemIndex];
+                if (!item) continue;
+
+                const parameters: Record<string, string> = {
+                    workspaceSlug: this.getNodeParameter('workspaceSlug', itemIndex) as string,
+                };
+
+                if (ParameterUtils.shouldIncludeProjectId(resource, operation))
+                    parameters.projectId = this.getNodeParameter('projectId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeStateId(resource, operation))
+                    parameters.stateId = this.getNodeParameter('stateId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeLabelId(resource, operation))
+                    parameters.labelId = this.getNodeParameter('labelId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeLinkId(resource, operation))
+                    parameters.linkId = this.getNodeParameter('linkId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeIssueId(resource, operation))
+                    parameters.issueId = this.getNodeParameter('issueId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeActivityId(resource, operation))
+                    parameters.activityId = this.getNodeParameter('activityId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeCommentId(resource, operation))
+                    parameters.commentId = this.getNodeParameter('commentId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeIssueTypeId(resource, operation))
+                    parameters.issueTypeId = this.getNodeParameter('issueTypeId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeIssuePropertyId(resource, operation))
+                    parameters.issuePropertyId = this.getNodeParameter('issuePropertyId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeOptionId(resource, operation))
+                    parameters.optionId = this.getNodeParameter('optionId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeModuleId(resource, operation))
+                    parameters.moduleId = this.getNodeParameter('moduleId', itemIndex) as string;
+
+                if (ParameterUtils.shouldIncludeCycleId(resource, operation))
+                    parameters.cycleId = this.getNodeParameter('cycleId', itemIndex) as string;
+
+                const [method, route] = constructRoute(resource, operation, parameters);
+                const body = this.getNodeParameter('additionalFields', 0, null) as IDataObject;
+                let responseData = await planeApiRequest.call(this, method, route, body);
+
+                returnData.push(
+                    ...this.helpers.constructExecutionMetaData(
+                        this.helpers.returnJsonArray(responseData as IDataObject[]),
+                        {
+                            itemData: { item: itemIndex },
+                        }
+                    )
+                )
+            } catch (error) {
+                if (this.continueOnFail()) {
+                    returnData.push({ json: { error: error.message } });
+                    continue;
+                }
+                throw error;
+            }
+        }
+
+        return [returnData];
     }
 }

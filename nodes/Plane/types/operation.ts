@@ -7,12 +7,8 @@ export enum DefaultOperations {
 }
 
 export enum IssueOperations {
-    CREATE = 'create',
-    LIST = 'list',
     GET_BY_UUID = 'getByUuid',
     GET_BY_SEQUENCE_ID = 'getBySequenceId',
-    UPDATE = 'update',
-    DELETE = 'delete',
 }
 
 export enum MembersOperations {
@@ -20,4 +16,10 @@ export enum MembersOperations {
     LIST_PROJECT = 'listProject',
 }
 
-export type AnyOperation = DefaultOperations & IssueOperations & MembersOperations;
+export const AllOperations = {
+    ...DefaultOperations,
+    ...IssueOperations,
+    ...MembersOperations,
+} as const;
+
+export type AnyOperation = typeof AllOperations[keyof typeof AllOperations];

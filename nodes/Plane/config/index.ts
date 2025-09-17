@@ -1,0 +1,1 @@
+export const PLANE_HOSTED_BASE_URL = 'https://api.plane.so/api/v1';
