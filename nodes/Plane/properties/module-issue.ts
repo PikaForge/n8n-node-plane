@@ -10,26 +10,33 @@ export const ModuleIssueProperties = [
             options: [
                 {
                     name: 'Create Module Issue',
-                    value: 'create',
+                    value: DefaultOperations.CREATE,
                     description: 'Create a new module issue',
                     action: 'Create a module issue',
                 },
                 {
                     name: 'List Module Issues',
-                    value: 'list',
+                    value: DefaultOperations.LIST,
                     description: 'Get a list of module issues',
                     action: 'List module issues',
                 },
                 {
                     name: 'Delete Module Issue',
-                    value: 'delete',
+                    value: DefaultOperations.DELETE,
                     description: 'Delete a module issue',
                     action: 'Delete a module issue',
                 }
             ],
-            default: 'create',
+            default: DefaultOperations.LIST,
         }
     ),
+    OperationNodeProperties.create(Resource.MODULE_ISSUE, [DefaultOperations.DELETE], {
+        displayName: 'Issue ID',
+        name: 'issueId',
+        type: 'string',
+        required: true,
+        default: '',
+    }),
     OperationNodeProperties.create(Resource.MODULE_ISSUE, [DefaultOperations.CREATE], {
         displayName: 'Payload',
         name: 'payload',

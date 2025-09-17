@@ -45,7 +45,7 @@ export const IssueProperties = [
                     action: 'Delete an issue',
                 }
             ],
-            default: 'create',
+            default: DefaultOperations.LIST,
         }
     ),
     OperationNodeProperties.create(Resource.ISSUE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {

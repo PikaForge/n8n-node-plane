@@ -4,7 +4,10 @@ import { OperationNodeProperties } from "./common/operation-node-properties";
 import { planeApiRequest, prepareRequestBody } from "./GenericFunctions";
 import { CycleProperties } from "./properties/cycle";
 import { CycleIssueProperties } from "./properties/cycle-issue";
+import { IntakeIssueProperties } from "./properties/intake-issue";
 import { IssueProperties } from "./properties/issue";
+import { IssueActivityProperties } from "./properties/issue-activity";
+import { IssueCommentProperties } from "./properties/issue-comment";
 import { LabelProperties } from "./properties/label";
 import { LinkProperties } from "./properties/link";
 import { ModuleProperties } from "./properties/module";
@@ -14,6 +17,12 @@ import { StateProperties } from "./properties/state";
 import { AllOperations, AnyOperation, DefaultOperations } from "./types/operation";
 import { PlaneResource, Resource } from "./types/resource";
 import { ParameterUtils } from "./utils/parameters";
+import { IssueTypeProperties } from "./properties/issue-type";
+import { IssuePropertiesProperties } from "./properties/issue-properties";
+import { IssuePropertyOptionsProperties } from "./properties/issue-property-options";
+import { IssuePropertyValuesProperties } from "./properties/issue-property-values";
+import { WorklogsProperties } from "./properties/worklogs";
+import { MembersProperties } from "./properties/members";
 
 export class Plane implements INodeType {
     description: INodeTypeDescription = {
@@ -100,7 +109,8 @@ export class Plane implements INodeType {
                     Resource.ISSUE_ACTIVITY,
                     Resource.ISSUE_COMMENT,
                     Resource.ISSUE_PROPERTY_VALUES,
-                    Resource.ISSUE_ATTACHMENTS
+                    Resource.ISSUE_ATTACHMENTS,
+                    Resource.WORKLOGS,
                 ],
                 Object.values(AllOperations),
                 {
@@ -125,6 +135,30 @@ export class Plane implements INodeType {
                 default: '',
             }),
 
+            OperationNodeProperties.create(Resource.CYCLE_ISSUE, Object.values(AllOperations), {
+                displayName: 'Cycle ID',
+                name: 'cycleId',
+                type: 'string',
+                required: true,
+                default: '',
+            }),
+
+            OperationNodeProperties.create(Resource.ISSUE_PROPERTIES, Object.values(AllOperations), {
+                displayName: 'Issue Type ID',
+                name: 'issueTypeId',
+                type: 'string',
+                required: true,
+                default: '',
+            }),
+
+            OperationNodeProperties.create([Resource.ISSUE_PROPERTY_OPTIONS, Resource.ISSUE_PROPERTY_VALUES], Object.values(AllOperations), {
+                displayName: 'Issue Property ID',
+                name: 'issuePropertyId',
+                type: 'string',
+                required: true,
+                default: '',
+            }),
+
 
             // --------------------------------------------------
             //         Operations
@@ -134,20 +168,20 @@ export class Plane implements INodeType {
             ...LabelProperties,
             ...LinkProperties,
             ...IssueProperties,
-            // ...IssueActivityProperties,
-            // ...IssueCommentProperties,
-            // ...IssueTypeProperties,
-            // ...IssuePropertiesProperties,
-            // ...IssuePropertyOptionsProperties,
-            // ...IssuePropertyValuesProperties,
-            // ...IssueAttachmentsProperties,
+            ...IssueActivityProperties,
+            ...IssueCommentProperties,
+            ...IssueTypeProperties,
+            ...IssuePropertiesProperties,
+            ...IssuePropertyOptionsProperties,
+            ...IssuePropertyValuesProperties,
+            // ...IssueAttachmentsProperties, // WE DO NOT SUPPORT ATTACHMENTS AT THE MOMENT
             ...ModuleProperties,
             ...ModuleIssueProperties,
             ...CycleProperties,
             ...CycleIssueProperties,
-            // ...IntakeIssueProperties,
-            // ...WorklogsProperties,
-            // ...MembersProperties,
+            ...IntakeIssueProperties,
+            ...WorklogsProperties,
+            ...MembersProperties,
         ]
     }
 
@@ -206,72 +240,72 @@ export class Plane implements INodeType {
         const operation = this.getNodeParameter('operation', 0) as AnyOperation;
 
         for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
-                const item = items[itemIndex];
-                if (!item) continue;
+            const item = items[itemIndex];
+            if (!item) continue;
 
-                const parameters: Record<string, string> = {
-                    workspaceSlug: this.getNodeParameter('workspaceSlug', itemIndex) as string,
-                };
+            const parameters: Record<string, string> = {
+                workspaceSlug: this.getNodeParameter('workspaceSlug', itemIndex) as string,
+            };
 
-                if (ParameterUtils.shouldIncludeProjectId(resource, operation))
-                    parameters.projectId = this.getNodeParameter('projectId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeProjectId(resource, operation))
+                parameters.projectId = this.getNodeParameter('projectId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeStateId(resource, operation))
-                    parameters.stateId = this.getNodeParameter('stateId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeStateId(resource, operation))
+                parameters.stateId = this.getNodeParameter('stateId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeLabelId(resource, operation))
-                    parameters.labelId = this.getNodeParameter('labelId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeLabelId(resource, operation))
+                parameters.labelId = this.getNodeParameter('labelId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeLinkId(resource, operation))
-                    parameters.linkId = this.getNodeParameter('linkId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeLinkId(resource, operation))
+                parameters.linkId = this.getNodeParameter('linkId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeIssueId(resource, operation))
-                    parameters.issueId = this.getNodeParameter('issueId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeIssueId(resource, operation))
+                parameters.issueId = this.getNodeParameter('issueId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeActivityId(resource, operation))
-                    parameters.activityId = this.getNodeParameter('activityId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeActivityId(resource, operation))
+                parameters.activityId = this.getNodeParameter('activityId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeCommentId(resource, operation))
-                    parameters.commentId = this.getNodeParameter('commentId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeCommentId(resource, operation))
+                parameters.commentId = this.getNodeParameter('commentId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeIssueTypeId(resource, operation))
-                    parameters.issueTypeId = this.getNodeParameter('issueTypeId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeIssueTypeId(resource, operation))
+                parameters.issueTypeId = this.getNodeParameter('issueTypeId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeIssuePropertyId(resource, operation))
-                    parameters.issuePropertyId = this.getNodeParameter('issuePropertyId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeIssuePropertyId(resource, operation))
+                parameters.issuePropertyId = this.getNodeParameter('issuePropertyId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeOptionId(resource, operation))
-                    parameters.optionId = this.getNodeParameter('optionId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeOptionId(resource, operation))
+                parameters.optionId = this.getNodeParameter('optionId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeModuleId(resource, operation))
-                    parameters.moduleId = this.getNodeParameter('moduleId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeModuleId(resource, operation))
+                parameters.moduleId = this.getNodeParameter('moduleId', itemIndex) as string;
 
-                if (ParameterUtils.shouldIncludeCycleId(resource, operation))
-                    parameters.cycleId = this.getNodeParameter('cycleId', itemIndex) as string;
+            if (ParameterUtils.shouldIncludeCycleId(resource, operation))
+                parameters.cycleId = this.getNodeParameter('cycleId', itemIndex) as string;
 
-                const [method, route] = constructRoute(resource, operation, parameters);
+            const [method, route] = constructRoute(resource, operation, parameters);
 
-const parametersToKeyValue = async (
-					accumulator: { [key: string]: any },
-					cur: { name: string; value: string; parameterType?: string; inputDataFieldName?: string },
-				) => {
-					accumulator[cur.name] = cur.value;
-					return accumulator;
-				};
+            const parametersToKeyValue = async (
+                accumulator: { [key: string]: any },
+                cur: { name: string; value: string; parameterType?: string; inputDataFieldName?: string },
+            ) => {
+                accumulator[cur.name] = cur.value;
+                return accumulator;
+            };
 
-                const body = this.getNodeParameter('payload.parameters', itemIndex, []) as [{name: string; value: string;}];
-                const parsedBody = await prepareRequestBody(body, 'json', 4, parametersToKeyValue) as IDataObject;
+            const body = this.getNodeParameter('payload.parameters', itemIndex, []) as [{ name: string; value: string; }];
+            const parsedBody = await prepareRequestBody(body, 'json', 4, parametersToKeyValue) as IDataObject;
 
-                let responseData = await planeApiRequest.call(this, method, route, parsedBody);
+            let responseData = await planeApiRequest.call(this, method, route, parsedBody);
 
-                returnData.push(
-                    ...this.helpers.constructExecutionMetaData(
-                        this.helpers.returnJsonArray(responseData as IDataObject[]),
-                        {
-                            itemData: { item: itemIndex },
-                        }
-                    )
+            returnData.push(
+                ...this.helpers.constructExecutionMetaData(
+                    this.helpers.returnJsonArray(responseData as IDataObject[]),
+                    {
+                        itemData: { item: itemIndex },
+                    }
                 )
+            )
         }
 
         return [returnData];

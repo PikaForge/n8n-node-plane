@@ -3,58 +3,53 @@ import { ResourceOperationNodeProperties } from "../common/resource-operation-no
 import { DefaultOperations } from "../types/operation";
 import { Resource } from "../types/resource";
 
-export const CycleProperties = [
+export const IntakeIssueProperties = [
     ResourceOperationNodeProperties.create(
-        Resource.CYCLE,
+        Resource.INTAKE_ISSUE,
         {
             options: [
                 {
-                    name: 'Create Cycle',
+                    name: 'Create Intake Issue',
                     value: DefaultOperations.CREATE,
-                    description: 'Create a new cycle',
-                    action: 'Create a cycle',
+                    description: 'Create a new intake issue',
+                    action: 'Create an intake issue',
                 },
                 {
-                    name: 'List Cycles',
+                    name: 'List Intake Issues',
                     value: DefaultOperations.LIST,
-                    description: 'Get a list of cycles',
-                    action: 'List cycles',
+                    description: 'Get a list of intake issues',
+                    action: 'List intake issues',
                 },
                 {
-                    name: 'Get Cycle',
+                    name: 'Get Intake Issue',
                     value: DefaultOperations.GET,
-                    description: 'Get a cycle',
-                    action: 'Get a cycle',
+                    description: 'Get an intake issue',
+                    action: 'Get an intake issue',
                 },
                 {
-                    name: 'Update Cycle',
+                    name: 'Update Intake Issue',
                     value: DefaultOperations.UPDATE,
-                    description: 'Update a cycle',
-                    action: 'Update a cycle',
+                    description: 'Update an intake issue',
+                    action: 'Update an intake issue',
                 },
                 {
-                    name: 'Delete Cycle',
+                    name: 'Delete Intake Issue',
                     value: DefaultOperations.DELETE,
-                    description: 'Delete a cycle',
-                    action: 'Delete a cycle',
+                    description: 'Delete an intake issue',
+                    action: 'Delete an intake issue',
                 }
             ],
             default: DefaultOperations.LIST,
         }
     ),
-    OperationNodeProperties.create(Resource.CYCLE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
-        displayName: 'Cycle Name or ID',
-        name: 'cycleId',
+    OperationNodeProperties.create(Resource.INTAKE_ISSUE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
+        displayName: 'Issue ID',
+        name: 'issueId',
+        type: 'string',
         required: true,
-        type: 'options',
-        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-        typeOptions: {
-            loadOptionsDependsOn: ['workspaceSlug', 'projectId'],
-            loadOptionsMethod: 'getCycles',
-        },
         default: '',
     }),
-    OperationNodeProperties.create(Resource.CYCLE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
+    OperationNodeProperties.create(Resource.INTAKE_ISSUE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
         displayName: 'Payload',
         name: 'payload',
         type: 'fixedCollection',

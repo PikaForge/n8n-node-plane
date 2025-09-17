@@ -39,7 +39,7 @@ export const ProjectProperties = [
                     action: 'Delete a project',
                 }
             ],
-            default: DefaultOperations.CREATE,
+            default: DefaultOperations.LIST,
         }
     ),
     OperationNodeProperties.create(Resource.PROJECT, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {

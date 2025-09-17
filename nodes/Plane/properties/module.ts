@@ -10,36 +10,36 @@ export const ModuleProperties = [
             options: [
                 {
                     name: 'Create Module',
-                    value: 'create',
+                    value: DefaultOperations.CREATE,
                     description: 'Create a new module',
                     action: 'Create a module',
                 },
                 {
                     name: 'List Modules',
-                    value: 'list',
+                    value: DefaultOperations.LIST,
                     description: 'Get a list of modules',
                     action: 'List modules',
                 },
                 {
                     name: 'Get Module',
-                    value: 'get',
+                    value: DefaultOperations.GET,
                     description: 'Get a module',
                     action: 'Get a module',
                 },
                 {
                     name: 'Update Module',
-                    value: 'update',
+                    value: DefaultOperations.UPDATE,
                     description: 'Update a module',
                     action: 'Update a module',
                 },
                 {
                     name: 'Delete Module',
-                    value: 'delete',
+                    value: DefaultOperations.DELETE,
                     description: 'Delete a module',
                     action: 'Delete a module',
                 }
             ],
-            default: 'create',
+            default: DefaultOperations.LIST,
         }
     ),
     OperationNodeProperties.create(Resource.MODULE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {

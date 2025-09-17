@@ -10,36 +10,36 @@ export const LabelProperties = [
             options: [
                 {
                     name: 'Create Label',
-                    value: 'create',
+                    value: DefaultOperations.CREATE,
                     description: 'Create a new label',
                     action: 'Create a label',
                 },
                 {
                     name: 'List Labels',
-                    value: 'list',
+                    value: DefaultOperations.LIST,
                     description: 'Get a list of labels',
                     action: 'List labels',
                 },
                 {
                     name: 'Get Label',
-                    value: 'get',
+                    value: DefaultOperations.GET,
                     description: 'Get a label',
                     action: 'Get a label',
                 },
                 {
                     name: 'Update Label',
-                    value: 'update',
+                    value: DefaultOperations.UPDATE,
                     description: 'Update a label',
                     action: 'Update a label',
                 },
                 {
                     name: 'Delete Label',
-                    value: 'delete',
+                    value: DefaultOperations.DELETE,
                     description: 'Delete a label',
                     action: 'Delete a label',
                 }
             ],
-            default: 'create',
+            default: DefaultOperations.LIST,
         }
     ),
     OperationNodeProperties.create(Resource.LABEL, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {

@@ -10,45 +10,38 @@ export const StateProperties = [
             options: [
                 {
                     name: 'Create State',
-                    value: 'create',
+                    value: DefaultOperations.CREATE,
                     description: 'Create a new state',
                     action: 'Create a state',
                 },
                 {
                     name: 'List States',
-                    value: 'list',
+                    value: DefaultOperations.LIST,
                     description: 'Get a list of states',
                     action: 'List states',
                 },
                 {
                     name: 'Get State',
-                    value: 'get',
+                    value: DefaultOperations.GET,
                     description: 'Get a state',
                     action: 'Get a state',
                 },
                 {
                     name: 'Update State',
-                    value: 'update',
+                    value: DefaultOperations.UPDATE,
                     description: 'Update a state',
                     action: 'Update a state',
                 },
                 {
                     name: 'Delete State',
-                    value: 'delete',
+                    value: DefaultOperations.DELETE,
                     description: 'Delete a state',
                     action: 'Delete a state',
                 }
             ],
-            default: 'create',
+            default: DefaultOperations.LIST,
         }
     ),
-    OperationNodeProperties.create(Resource.STATE, Object.values(DefaultOperations), {
-        displayName: 'Project ID',
-        name: 'projectId',
-        type: 'string',
-        required: true,
-        default: '',
-    }),
     OperationNodeProperties.create(Resource.STATE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
         displayName: 'State ID',
         name: 'stateId',

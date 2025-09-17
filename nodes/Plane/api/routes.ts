@@ -1,4 +1,4 @@
-import { AnyOperation, DefaultOperations, IssueOperations, MembersOperations } from "../types/operation";
+import { AnyOperation, DefaultOperations, IssueOperations, MembersOperations, WorklogsOperations } from "../types/operation";
 import { Resource } from "../types/resource";
 
 enum Method {
@@ -122,11 +122,11 @@ export const API_ROUTES: APIRoutes = {
         [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/intake-issues/{{ issueId }}'],
     },
     [Resource.WORKLOGS]: {
-        // TOTAL WORKLOGS
-        [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/issues/{{ issueId }}/worklogs'],
-        [DefaultOperations.LIST]: [Method.GET, '/workspaces/{{ workspaceSlug }}/issues/{{ issueId }}/worklogs'],
-        [DefaultOperations.UPDATE]: [Method.PATCH, '/workspaces/{{ workspaceSlug }}/issues/{{ issueId }}/worklogs/{{ worklogId }}'],
-        [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/issues/{{ issueId }}/worklogs/{{ worklogId }}'],
+        [DefaultOperations.CREATE]: [Method.POST, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/worklogs'],
+        [DefaultOperations.LIST]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/worklogs'],
+        [WorklogsOperations.GET_TOTAL]: [Method.GET, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/total-worklogs'],
+        [DefaultOperations.UPDATE]: [Method.PATCH, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/worklogs/{{ worklogId }}'],
+        [DefaultOperations.DELETE]: [Method.DELETE, '/workspaces/{{ workspaceSlug }}/projects/{{ projectId }}/issues/{{ issueId }}/worklogs/{{ worklogId }}'],
     },
     [Resource.MEMBERS]: {
         [MembersOperations.LIST_WORKSPACE]: [Method.GET, '/workspaces/{{ workspaceSlug }}/members'],

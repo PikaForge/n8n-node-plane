@@ -1,60 +1,55 @@
 import { OperationNodeProperties } from "../common/operation-node-properties";
 import { ResourceOperationNodeProperties } from "../common/resource-operation-node-properties";
-import { DefaultOperations } from "../types/operation";
+import { DefaultOperations, WorklogsOperations } from "../types/operation";
 import { Resource } from "../types/resource";
 
-export const CycleProperties = [
+export const WorklogsProperties = [
     ResourceOperationNodeProperties.create(
-        Resource.CYCLE,
+        Resource.WORKLOGS,
         {
             options: [
                 {
-                    name: 'Create Cycle',
+                    name: 'Create Worklog',
                     value: DefaultOperations.CREATE,
-                    description: 'Create a new cycle',
-                    action: 'Create a cycle',
+                    description: 'Create a new worklog',
+                    action: 'Create a worklog',
                 },
                 {
-                    name: 'List Cycles',
+                    name: 'List Worklogs',
                     value: DefaultOperations.LIST,
-                    description: 'Get a list of cycles',
-                    action: 'List cycles',
+                    description: 'Get a list of worklogs',
+                    action: 'List worklogs',
                 },
                 {
-                    name: 'Get Cycle',
-                    value: DefaultOperations.GET,
-                    description: 'Get a cycle',
-                    action: 'Get a cycle',
+                    name: 'Get Total Logged Time',
+                    value: WorklogsOperations.GET_TOTAL,
+                    description: 'Get the total logged time for a project',
+                    action: 'Get total logged time',
                 },
                 {
-                    name: 'Update Cycle',
+                    name: 'Update Worklog',
                     value: DefaultOperations.UPDATE,
-                    description: 'Update a cycle',
-                    action: 'Update a cycle',
+                    description: 'Update a worklog',
+                    action: 'Update a worklog',
                 },
                 {
-                    name: 'Delete Cycle',
+                    name: 'Delete Worklog',
                     value: DefaultOperations.DELETE,
-                    description: 'Delete a cycle',
-                    action: 'Delete a cycle',
+                    description: 'Delete a worklog',
+                    action: 'Delete a worklog',
                 }
             ],
             default: DefaultOperations.LIST,
         }
     ),
-    OperationNodeProperties.create(Resource.CYCLE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
-        displayName: 'Cycle Name or ID',
-        name: 'cycleId',
+    OperationNodeProperties.create(Resource.WORKLOGS, [DefaultOperations.UPDATE, DefaultOperations.DELETE], {
+        displayName: 'Worklog ID',
+        name: 'worklogId',
+        type: 'string',
         required: true,
-        type: 'options',
-        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-        typeOptions: {
-            loadOptionsDependsOn: ['workspaceSlug', 'projectId'],
-            loadOptionsMethod: 'getCycles',
-        },
         default: '',
     }),
-    OperationNodeProperties.create(Resource.CYCLE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
+    OperationNodeProperties.create(Resource.WORKLOGS, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
         displayName: 'Payload',
         name: 'payload',
         type: 'fixedCollection',

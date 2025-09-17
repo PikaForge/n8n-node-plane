@@ -10,36 +10,36 @@ export const LinkProperties = [
             options: [
                 {
                     name: 'Create Link',
-                    value: 'create',
+                    value: DefaultOperations.CREATE,
                     description: 'Create a new link',
                     action: 'Create a link',
                 },
                 {
                     name: 'List Links',
-                    value: 'list',
+                    value: DefaultOperations.LIST,
                     description: 'Get a list of links',
                     action: 'List links',
                 },
                 {
                     name: 'Get Link',
-                    value: 'get',
+                    value: DefaultOperations.GET,
                     description: 'Get a link',
                     action: 'Get a link',
                 },
                 {
                     name: 'Update Link',
-                    value: 'update',
+                    value: DefaultOperations.UPDATE,
                     description: 'Update a link',
                     action: 'Update a link',
                 },
                 {
                     name: 'Delete Link',
-                    value: 'delete',
+                    value: DefaultOperations.DELETE,
                     description: 'Delete a link',
                     action: 'Delete a link',
                 }
             ],
-            default: 'create',
+            default: DefaultOperations.LIST,
         }
     ),
     OperationNodeProperties.create(Resource.LINK, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {

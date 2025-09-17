@@ -10,26 +10,33 @@ export const CycleIssueProperties = [
             options: [
                 {
                     name: 'Create Cycle Issue',
-                    value: 'create',
+                    value: DefaultOperations.CREATE,
                     description: 'Create a new cycle issue',
                     action: 'Create a cycle issue',
                 },
                 {
                     name: 'List Cycle Issues',
-                    value: 'list',
+                    value: DefaultOperations.LIST,
                     description: 'Get a list of cycle issues',
                     action: 'List cycle issues',
                 },
                 {
                     name: 'Delete Cycle Issue',
-                    value: 'delete',
+                    value: DefaultOperations.DELETE,
                     description: 'Delete a cycle issue',
                     action: 'Delete a cycle issue',
                 }
             ],
-            default: 'create',
+            default: DefaultOperations.LIST,
         }
     ),
+    OperationNodeProperties.create(Resource.CYCLE_ISSUE, [DefaultOperations.DELETE], {
+        displayName: 'Issue ID',
+        name: 'issueId',
+        type: 'string',
+        required: true,
+        default: '',
+    }),
     OperationNodeProperties.create(Resource.CYCLE_ISSUE, [DefaultOperations.CREATE], {
         displayName: 'Payload',
         name: 'payload',

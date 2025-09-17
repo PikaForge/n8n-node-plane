@@ -3,58 +3,53 @@ import { ResourceOperationNodeProperties } from "../common/resource-operation-no
 import { DefaultOperations } from "../types/operation";
 import { Resource } from "../types/resource";
 
-export const CycleProperties = [
+export const IssueTypeProperties = [
     ResourceOperationNodeProperties.create(
-        Resource.CYCLE,
+        Resource.ISSUE_TYPE,
         {
             options: [
                 {
-                    name: 'Create Cycle',
+                    name: 'Create Issue Type',
                     value: DefaultOperations.CREATE,
-                    description: 'Create a new cycle',
-                    action: 'Create a cycle',
+                    description: 'Create a new issue type',
+                    action: 'Create an issue type',
                 },
                 {
-                    name: 'List Cycles',
+                    name: 'List Issue Types',
                     value: DefaultOperations.LIST,
-                    description: 'Get a list of cycles',
-                    action: 'List cycles',
+                    description: 'Get a list of issue types',
+                    action: 'List issue types',
                 },
                 {
-                    name: 'Get Cycle',
+                    name: 'Get Issue Type',
                     value: DefaultOperations.GET,
-                    description: 'Get a cycle',
-                    action: 'Get a cycle',
+                    description: 'Get a specific issue type',
+                    action: 'Get an issue type',
                 },
                 {
-                    name: 'Update Cycle',
+                    name: 'Update Issue Type',
                     value: DefaultOperations.UPDATE,
-                    description: 'Update a cycle',
-                    action: 'Update a cycle',
+                    description: 'Update a specific issue type',
+                    action: 'Update an issue type',
                 },
                 {
-                    name: 'Delete Cycle',
+                    name: 'Delete Issue Type',
                     value: DefaultOperations.DELETE,
-                    description: 'Delete a cycle',
-                    action: 'Delete a cycle',
+                    description: 'Delete a specific issue type',
+                    action: 'Delete an issue type',
                 }
             ],
             default: DefaultOperations.LIST,
         }
     ),
-    OperationNodeProperties.create(Resource.CYCLE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
-        displayName: 'Cycle Name or ID',
-        name: 'cycleId',
+    OperationNodeProperties.create(Resource.ISSUE_TYPE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
+        displayName: 'Issue Type ID',
+        name: 'issueTypeId',
+        type: 'string',
         required: true,
-        type: 'options',
-        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-        typeOptions: {
-            loadOptionsDependsOn: ['workspaceSlug', 'projectId'],
-            loadOptionsMethod: 'getCycles',
-        },
         default: '',
     }),
-    OperationNodeProperties.create(Resource.CYCLE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
+    OperationNodeProperties.create(Resource.ISSUE_TYPE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
         displayName: 'Payload',
         name: 'payload',
         type: 'fixedCollection',
