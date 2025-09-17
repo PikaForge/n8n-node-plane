@@ -43,10 +43,11 @@ export const CycleProperties = [
         }
     ),
     OperationNodeProperties.create(Resource.CYCLE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
-        displayName: 'Cycle ID',
+        displayName: 'Cycle Name or ID',
         name: 'cycleId',
         required: true,
         type: 'options',
+        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
         typeOptions: {
             loadOptionsDependsOn: ['workspaceSlug', 'projectId'],
             loadOptionsMethod: 'getCycles',

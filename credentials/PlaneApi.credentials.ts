@@ -4,7 +4,7 @@ import { PLANE_HOSTED_BASE_URL } from "../nodes/Plane/config";
 export class PlaneApi implements ICredentialType {
     name = 'planeApi';
     displayName = 'Plane API'
-    documentationUrl = 'plane';
+    documentationUrl = 'https://docs.plane.so/';
 
     properties: INodeProperties[] = [
         {

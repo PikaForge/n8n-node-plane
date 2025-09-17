@@ -64,7 +64,7 @@ export class Plane implements INodeType {
                     PlaneResource.getPropertyOptions(Resource.WORKLOGS),
                     PlaneResource.getPropertyOptions(Resource.MEMBERS),
                 ],
-                default: 'project',
+                default: '',
             },
 
             OperationNodeProperties.create(Object.values(Resource), Object.values(AllOperations), {
@@ -79,10 +79,11 @@ export class Plane implements INodeType {
                 Object.values(Resource).filter(r => r !== Resource.PROJECT),
                 Object.values(AllOperations),
                 {
-                    displayName: 'Project ID',
+                    displayName: 'Project Name or ID',
                     name: 'projectId',
                     required: true,
                     type: 'options',
+                    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
                     typeOptions: {
                         loadOptionsDependsOn: ['workspaceSlug'],
                         loadOptionsMethod: 'getProjects',
@@ -110,10 +111,11 @@ export class Plane implements INodeType {
             ),
 
             OperationNodeProperties.create(Resource.MODULE_ISSUE, Object.values(AllOperations), {
-                displayName: 'Module ID',
+                displayName: 'Module Name or ID',
                 name: 'moduleId',
                 required: true,
                 type: 'options',
+                description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
                 typeOptions: {
                     loadOptionsDependsOn: ['workspaceSlug', 'projectId'],
                     loadOptionsMethod: 'getModules',

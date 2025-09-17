@@ -1,4 +1,4 @@
-import { IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, IHttpRequestOptions, ILoadOptionsFunctions, IRequestOptions } from "n8n-workflow";
+import { IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, ILoadOptionsFunctions, IRequestOptions } from "n8n-workflow";
 
 export async function planeApiRequest(
     this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,

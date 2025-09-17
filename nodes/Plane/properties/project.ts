@@ -43,10 +43,11 @@ export const ProjectProperties = [
         }
     ),
     OperationNodeProperties.create(Resource.PROJECT, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
-        displayName: 'Project ID',
+        displayName: 'Project Name or ID',
         name: 'projectId',
         required: true,
         type: 'options',
+        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
         typeOptions: {
             loadOptionsDependsOn: ['workspaceSlug'],
             loadOptionsMethod: 'getProjects',

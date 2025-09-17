@@ -43,10 +43,11 @@ export const ModuleProperties = [
         }
     ),
     OperationNodeProperties.create(Resource.MODULE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
-        displayName: 'Module ID',
+        displayName: 'Module Name or ID',
         name: 'moduleId',
         required: true,
         type: 'options',
+        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
         typeOptions: {
             loadOptionsDependsOn: ['workspaceSlug', 'projectId'],
             loadOptionsMethod: 'getModules',

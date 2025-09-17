@@ -1,6 +1,7 @@
 import { INodeProperties } from "n8n-workflow";
 import { Resource } from "../types/resource";
 
+// eslint-disable-next-line n8n-nodes-base/node-param-default-missing
 export const ResourceOperationDefaults: Pick<INodeProperties, 'displayName' | 'name' | 'type' | 'noDataExpression'> = {
     displayName: 'Operation',
     name: 'operation',
