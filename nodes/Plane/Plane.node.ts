@@ -87,7 +87,7 @@ export class Plane implements INodeType {
             }),
 
             OperationNodeProperties.create(
-                Object.values(Resource).filter(r => r !== Resource.PROJECT),
+                Object.values(Resource).filter(r => ![Resource.PROJECT, Resource.MEMBERS].includes(r)),
                 Object.values(AllOperations),
                 {
                     displayName: 'Project Name or ID',
