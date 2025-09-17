@@ -54,11 +54,9 @@ export const ProjectProperties = [
         default: '',
     }),
     OperationNodeProperties.create(Resource.PROJECT, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
-        displayName: 'Additional Fields',
-        name: 'additionalFields',
-        type: 'collection',
-        placeholder: 'Add Field',
-        default: {},
-        options: [],
+        displayName: 'Data',
+        name: 'data',
+        type: 'json',
+        default: '',
     }),
 ]

@@ -57,11 +57,9 @@ export const StateProperties = [
         default: '',
     }),
     OperationNodeProperties.create(Resource.STATE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
-        displayName: 'Additional Fields',
-        name: 'additionalFields',
-        type: 'collection',
-        placeholder: 'Add Field',
-        default: {},
-        options: [],
+        displayName: 'Data',
+        name: 'data',
+        type: 'json',
+        default: '',
     }),
 ]

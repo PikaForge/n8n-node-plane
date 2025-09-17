@@ -50,11 +50,9 @@ export const LinkProperties = [
         default: '',
     }),
     OperationNodeProperties.create(Resource.LINK, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
-        displayName: 'Additional Fields',
-        name: 'additionalFields',
-        type: 'collection',
-        placeholder: 'Add Field',
-        default: {},
-        options: [],
+        displayName: 'Data',
+        name: 'data',
+        type: 'json',
+        default: '',
     }),
 ]

@@ -54,11 +54,9 @@ export const ModuleProperties = [
         default: '',
     }),
     OperationNodeProperties.create(Resource.MODULE, [DefaultOperations.CREATE, DefaultOperations.UPDATE], {
-        displayName: 'Additional Fields',
-        name: 'additionalFields',
-        type: 'collection',
-        placeholder: 'Add Field',
-        default: {},
-        options: [],
+        displayName: 'Data',
+        name: 'data',
+        type: 'json',
+        default: '',
     }),
 ]

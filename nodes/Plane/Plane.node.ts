@@ -11,6 +11,7 @@ import { StateProperties } from "./properties/state";
 import { AllOperations, AnyOperation, DefaultOperations } from "./types/operation";
 import { PlaneResource, Resource } from "./types/resource";
 import { ParameterUtils } from "./utils/parameters";
+import { ModuleIssueProperties } from "./properties/module-issue";
 
 export class Plane implements INodeType {
     description: INodeTypeDescription = {
@@ -19,7 +20,7 @@ export class Plane implements INodeType {
         group: ['output'],
         icon: { light: 'file:plane-light.svg', dark: 'file:plane-dark.svg' },
         version: 1,
-        subtitle: '={{$parameter["resource"]}} ={{$parameter["operation"]}}',
+        subtitle: '={{$parameter["resource"]}}:{{$parameter["operation"]}}',
         description: 'Consume Plane API',
         defaults: {
             name: 'Plane',
@@ -66,7 +67,7 @@ export class Plane implements INodeType {
                 default: 'project',
             },
 
-            OperationNodeProperties.create(Object.values(Resource), Object.values(DefaultOperations), {
+            OperationNodeProperties.create(Object.values(Resource), Object.values(AllOperations), {
                 displayName: 'Workspace Slug',
                 name: 'workspaceSlug',
                 type: 'string',
@@ -108,6 +109,19 @@ export class Plane implements INodeType {
                 }
             ),
 
+            OperationNodeProperties.create(Resource.MODULE_ISSUE, Object.values(AllOperations), {
+                displayName: 'Module ID',
+                name: 'moduleId',
+                required: true,
+                type: 'options',
+                typeOptions: {
+                    loadOptionsDependsOn: ['workspaceSlug', 'projectId'],
+                    loadOptionsMethod: 'getModules',
+                },
+                default: '',
+            }),
+
+
             // --------------------------------------------------
             //         Operations
             // --------------------------------------------------
@@ -124,7 +138,7 @@ export class Plane implements INodeType {
             // ...IssuePropertyValuesProperties,
             // ...IssueAttachmentsProperties,
             ...ModuleProperties,
-            // ...ModuleIssueProperties,
+            ...ModuleIssueProperties,
             // ...CycleProperties,
             // ...CycleIssueProperties,
             // ...IntakeIssueProperties,
@@ -160,11 +174,25 @@ export class Plane implements INodeType {
                     name: item.name as string,
                     value: item.id as string,
                 }));
+            },
+
+            async getCycles(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+                const [method, route] = constructRoute(Resource.CYCLE, DefaultOperations.LIST, {
+                    workspaceSlug: this.getCurrentNodeParameter('workspaceSlug') as string,
+                    projectId: this.getCurrentNodeParameter('projectId') as string,
+                });
+                const data = await planeApiRequest.call(this, method, route);
+                const results = data.results as IDataObject[];
+
+                return results.map(item => ({
+                    name: item.name as string,
+                    value: item.id as string,
+                }));
             }
         }
     }
 
-    
+
 
     async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
         const items = this.getInputData();
@@ -219,7 +247,7 @@ export class Plane implements INodeType {
                     parameters.cycleId = this.getNodeParameter('cycleId', itemIndex) as string;
 
                 const [method, route] = constructRoute(resource, operation, parameters);
-                const body = this.getNodeParameter('additionalFields', 0, null) as IDataObject;
+                const body = this.getNodeParameter('data', 0, null) as IDataObject;
                 let responseData = await planeApiRequest.call(this, method, route, body);
 
                 returnData.push(
