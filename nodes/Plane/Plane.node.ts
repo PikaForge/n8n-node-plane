@@ -1,7 +1,9 @@
 import { IDataObject, IExecuteFunctions, ILoadOptionsFunctions, INodeExecutionData, INodePropertyOptions, INodeType, INodeTypeDescription, NodeConnectionType } from "n8n-workflow";
 import { constructRoute } from "./api/routes";
 import { OperationNodeProperties } from "./common/operation-node-properties";
-import { planeApiRequest } from "./GenericFunctions";
+import { planeApiRequest, prepareRequestBody } from "./GenericFunctions";
+import { CycleProperties } from "./properties/cycle";
+import { CycleIssueProperties } from "./properties/cycle-issue";
 import { IssueProperties } from "./properties/issue";
 import { LabelProperties } from "./properties/label";
 import { LinkProperties } from "./properties/link";
@@ -12,8 +14,6 @@ import { StateProperties } from "./properties/state";
 import { AllOperations, AnyOperation, DefaultOperations } from "./types/operation";
 import { PlaneResource, Resource } from "./types/resource";
 import { ParameterUtils } from "./utils/parameters";
-import { CycleProperties } from "./properties/cycle";
-import { CycleIssueProperties } from "./properties/cycle-issue";
 
 export class Plane implements INodeType {
     description: INodeTypeDescription = {
@@ -251,9 +251,19 @@ export class Plane implements INodeType {
                     parameters.cycleId = this.getNodeParameter('cycleId', itemIndex) as string;
 
                 const [method, route] = constructRoute(resource, operation, parameters);
-                const body = this.getNodeParameter('data', 0, null) as IDataObject;
-                this.logger.debug(JSON.stringify(body));
-                let responseData = await planeApiRequest.call(this, method, route, body);
+
+const parametersToKeyValue = async (
+					accumulator: { [key: string]: any },
+					cur: { name: string; value: string; parameterType?: string; inputDataFieldName?: string },
+				) => {
+					accumulator[cur.name] = cur.value;
+					return accumulator;
+				};
+
+                const body = this.getNodeParameter('payload.parameters', itemIndex, []) as [{name: string; value: string;}];
+                const parsedBody = await prepareRequestBody(body, 'json', 4, parametersToKeyValue) as IDataObject;
+
+                let responseData = await planeApiRequest.call(this, method, route, parsedBody);
 
                 returnData.push(
                     ...this.helpers.constructExecutionMetaData(

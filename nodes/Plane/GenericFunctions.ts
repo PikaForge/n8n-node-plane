@@ -1,4 +1,11 @@
-import { IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, ILoadOptionsFunctions, IRequestOptions } from "n8n-workflow";
+import { ApplicationError, IDataObject, IExecuteFunctions, IHookFunctions, IHttpRequestMethods, ILoadOptionsFunctions, IRequestOptions } from "n8n-workflow";
+
+export type BodyParameter = {
+    name: string;
+    value: string;
+    parameterType?: 'formBinaryData' | 'formData';
+};
+
 
 export async function planeApiRequest(
     this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
@@ -15,7 +22,9 @@ export async function planeApiRequest(
     }
 
     const defaultOptions: IRequestOptions = {
-        headers: {},
+        headers: {
+            "Content-Type": "application/json",
+        },
         method,
         body,
         qs: query,
@@ -27,5 +36,41 @@ export async function planeApiRequest(
     if (['GET', 'HEAD', "DELETE"].includes(method) || optionsWithDefaults.body === null || optionsWithDefaults.body.length === 0)
         delete optionsWithDefaults.body;
 
-    return this.helpers.requestWithAuthentication.call(this, 'planeApi', optionsWithDefaults);
+    try {
+        return this.helpers.requestWithAuthentication.call(this, 'planeApi', optionsWithDefaults);
+    } catch (error) {
+        throw new ApplicationError(`Plane Error: [${error.errorCode}] ${error.message} ${JSON.stringify(optionsWithDefaults)}`);
+    }
 }
+
+export type BodyParametersReducer = (
+    acc: IDataObject,
+    cur: { name: string; value: string },
+) => Promise<IDataObject>;
+
+export async function reduceAsync<T, R>(
+    arr: T[],
+    reducer: (acc: Awaited<Promise<R>>, cur: T) => Promise<R>,
+    init: Promise<R> = Promise.resolve({} as R),
+): Promise<R> {
+    return await arr.reduce(async (promiseAcc, item) => {
+        return await reducer(await promiseAcc, item);
+    }, init);
+}
+
+export const prepareRequestBody = async (
+    parameters: BodyParameter[],
+    bodyType: string,
+    version: number,
+    defaultReducer: BodyParametersReducer,
+): Promise<Record<string, unknown>> => {
+    if (bodyType === 'json' && version >= 4) {
+        return await parameters.reduce(async (acc, entry) => {
+            const result: IDataObject = await acc;
+            result[entry.name] = entry.value;
+            return result;
+        }, Promise.resolve({}));
+    } else {
+        return await reduceAsync(parameters, defaultReducer);
+    }
+};
