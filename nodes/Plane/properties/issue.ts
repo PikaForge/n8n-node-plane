@@ -48,7 +48,7 @@ export const IssueProperties = [
             default: DefaultOperations.LIST,
         }
     ),
-    OperationNodeProperties.create(Resource.ISSUE, [DefaultOperations.GET, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
+    OperationNodeProperties.create(Resource.ISSUE, [IssueOperations.GET_BY_SEQUENCE_ID, IssueOperations.GET_BY_UUID, DefaultOperations.UPDATE, DefaultOperations.DELETE], {
         displayName: 'Issue ID',
         name: 'issueId',
         type: 'string',

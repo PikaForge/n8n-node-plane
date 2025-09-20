@@ -297,6 +297,7 @@ export class Plane implements INodeType {
             const parsedBody = await prepareRequestBody(body, 'json', 4, parametersToKeyValue) as IDataObject;
 
             let responseData = await planeApiRequest.call(this, method, route, parsedBody);
+            this.sendMessageToUI({method, route, parsedBody, responseData, itemIndex});
 
             returnData.push(
                 ...this.helpers.constructExecutionMetaData(
