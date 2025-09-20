@@ -14,7 +14,7 @@ export async function planeApiRequest(
     body: IDataObject = {},
     query: IDataObject = {},
     uri?: string,
-    options: IRequestOptions = {}
+    options: IRequestOptions = {},
 ) {
     const credentials = await this.getCredentials('planeApi');
     if (!credentials) {
